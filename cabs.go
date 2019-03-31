@@ -17,7 +17,7 @@ import (
 	"os"
 )
 
-type blobstore interface {
+type BlobStore interface {
 	// Write takes a byte slice of blob data and writes it to the store,
 	// returning its SHA256 sum as an array of bytes. If the write doesn't go
 	// well, an error is returned instead.
