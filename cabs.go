@@ -32,6 +32,11 @@ type filesystemBackedCABS struct {
 	basepath string
 }
 
+// NewFilesystemBackedCABS creates a new BlobStore which stores blobs in files
+// in the directory named by path. The directory structure beneath the
+// specified directory uses the most significant byte of the blob's SHA256
+// sum as a subdirectory name. The rest of the SHA256 is used as the filename.
+// Both the subdirectory and the filename are in lowercase hexidecimal.
 func NewFilesystemBackedCABS(path string) (*filesystemBackedCABS, error) {
 	var bs filesystemBackedCABS
 	err := os.MkdirAll(path, 0777)
@@ -42,6 +47,8 @@ func NewFilesystemBackedCABS(path string) (*filesystemBackedCABS, error) {
 	return &bs, nil
 }
 
+// Write takes a blob and writes it to the store. On success, the blob's SHA256
+// sum is returned.
 func (c *filesystemBackedCABS) Write(blob []byte) ([]byte, error) {
 	h := sha256.New()
 	h.Write(blob)
@@ -62,6 +69,8 @@ func (c *filesystemBackedCABS) Write(blob []byte) ([]byte, error) {
 	return sum, nil
 }
 
+// Read takes a SHA256 hash in byte slice format and retrieves the
+// blob with that hash, if it exists in the store.
 func (c *filesystemBackedCABS) Read(hash []byte) ([]byte, error) {
 	path := fmt.Sprintf("%x/%x", hash[0:1], hash[1:])
 	filePath := fmt.Sprintf("%s/%s", c.basepath, path)
